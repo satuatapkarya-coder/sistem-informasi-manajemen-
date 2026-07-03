@@ -13,17 +13,72 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
-        .sidebar-gradient { background: #0F172A; }
-        .custom-shadow { box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .active-tab { background: #2563EB; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #F8FAFC; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        .glass { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(12px); 
+        }
+        
+        .sidebar-gradient { 
+            background: #0F172A; 
+        }
+        
+        .custom-shadow { 
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1); 
+        }
+        
+        .no-scrollbar::-webkit-scrollbar { 
+            display: none; 
+        }
+        
+        .active-tab { 
+            background: #2563EB; 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); 
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Color classes for dynamic styling */
+        .color-blue-bg { background-color: #EFF6FF; }
+        .color-blue-text { color: #2563EB; }
+        
+        .color-green-bg { background-color: #F0FDF4; }
+        .color-green-text { color: #16A34A; }
+        
+        .color-amber-bg { background-color: #FFFBEB; }
+        .color-amber-text { color: #D97706; }
+        
+        .color-rose-bg { background-color: #FFF1F2; }
+        .color-rose-text { color: #E11D48; }
         
         /* Mobile Specific Optimizations */
         @media (max-width: 768px) {
-            .main-content { padding-bottom: 80px; }
-            .card-grid { grid-template-columns: 1fr; }
+            .main-content { 
+                padding-bottom: 80px; 
+            }
+            .card-grid { 
+                grid-template-columns: 1fr; 
+            }
         }
     </style>
 </head>
@@ -55,9 +110,9 @@
                         <p className="text-slate-500 text-center mb-8 text-sm font-medium">Enterprise Management System</p>
                         
                         <form onSubmit={handleLogin} className="space-y-4">
-                            <input type="email" placeholder="Email" className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" defaultValue="admin@erp.com" />
-                            <input type="password" placeholder="Password" className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" defaultValue="password" />
-                            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                            <input type="email" placeholder="Email" required className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" />
+                            <input type="password" placeholder="Password" required className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" />
+                            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
                                 {loading ? "Logging in..." : "Sign In"} <i data-lucide="arrow-right" className="w-4 h-4"></i>
                             </button>
                         </form>
@@ -70,7 +125,7 @@
             <div className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-slate-200 px-6 py-3 flex justify-between items-center z-[100]">
                 <NavItemMobile active={activeTab === 'dashboard'} icon="layout-dashboard" onClick={() => setActiveTab('dashboard')} />
                 <NavItemMobile active={activeTab === 'master'} icon="database" onClick={() => setActiveTab('master')} />
-                <div className="bg-blue-600 p-3 rounded-2xl text-white shadow-lg -mt-10 border-4 border-white" onClick={() => setActiveTab('transaksi')}>
+                <div className="bg-blue-600 p-3 rounded-2xl text-white shadow-lg -mt-10 border-4 border-white cursor-pointer hover:bg-blue-700 transition-all" onClick={() => setActiveTab('transaksi')}>
                     <i data-lucide="plus" className="w-6 h-6"></i>
                 </div>
                 <NavItemMobile active={activeTab === 'laporan'} icon="file-text" onClick={() => setActiveTab('laporan')} />
@@ -98,7 +153,7 @@
                     {/* Overlay for mobile */}
                     {isOpen && <div className="fixed inset-0 bg-black/50 z-[101] md:hidden" onClick={() => setIsOpen(false)}></div>}
                     
-                    <div className={`fixed inset-y-0 left-0 w-72 sidebar-gradient text-white transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out z-[102] md:static md:z-0`}>
+                    <div className={`fixed inset-y-0 left-0 w-72 sidebar-gradient text-white transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-50 md:relative md:z-0`}>
                         <div className="p-8 flex items-center gap-3">
                             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                                 <span className="font-extrabold text-xl">S</span>
@@ -110,7 +165,7 @@
                                 <button 
                                     key={menu.id}
                                     onClick={() => { setActiveTab(menu.id); setIsOpen(false); }}
-                                    className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === menu.id ? 'active-tab' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                                    className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === menu.id ? 'active-tab' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}
                                 >
                                     <i data-lucide={menu.icon} className="w-5 h-5"></i>
                                     <span className="font-semibold text-sm">{menu.label}</span>
@@ -124,57 +179,69 @@
 
         const Dashboard = () => {
             useEffect(() => {
-                const ctx = document.getElementById('mainChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                        datasets: [{
-                            label: 'Transaksi',
-                            data: [30, 45, 35, 60, 50, 75],
-                            borderColor: '#2563EB',
-                            borderWidth: 4,
-                            pointRadius: 0,
-                            tension: 0.4,
-                            fill: true,
-                            backgroundColor: (context) => {
-                                const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
-                                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-                                gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
-                                return gradient;
-                            },
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { x: { grid: { display: false } }, y: { display: false } }
-                    }
-                });
+                const chartElement = document.getElementById('mainChart');
+                if (chartElement) {
+                    const ctx = chartElement.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                            datasets: [{
+                                label: 'Transaksi',
+                                data: [30, 45, 35, 60, 50, 75],
+                                borderColor: '#2563EB',
+                                borderWidth: 4,
+                                pointRadius: 0,
+                                tension: 0.4,
+                                fill: true,
+                                backgroundColor: (context) => {
+                                    const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
+                                    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+                                    gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+                                    return gradient;
+                                },
+                            }]
+                        },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { 
+                                x: { 
+                                    grid: { display: false },
+                                    border: { display: false }
+                                }, 
+                                y: { 
+                                    display: false,
+                                    border: { display: false }
+                                } 
+                            }
+                        }
+                    });
+                }
                 lucide.createIcons();
             }, []);
 
             return (
                 <div className="space-y-6 animate-fade-in">
                     {/* Welcome Header */}
-                    <div className="md:flex justify-between items-center bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <div className="flex flex-col md:flex-row justify-between md:items-center bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                         <div>
                             <h1 className="text-2xl font-bold text-slate-800">Hi, Alex! 👋</h1>
                             <p className="text-slate-500 text-sm">Berikut ringkasan bisnis Anda hari ini.</p>
                         </div>
                         <div className="mt-4 md:mt-0 flex gap-2 overflow-x-auto no-scrollbar">
                             <span className="px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-bold whitespace-nowrap">Harian</span>
-                            <span className="px-4 py-2 text-slate-400 rounded-full text-xs font-bold whitespace-nowrap">Mingguan</span>
-                            <span className="px-4 py-2 text-slate-400 rounded-full text-xs font-bold whitespace-nowrap">Bulanan</span>
+                            <span className="px-4 py-2 text-slate-400 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-slate-50 transition-all">Mingguan</span>
+                            <span className="px-4 py-2 text-slate-400 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-slate-50 transition-all">Bulanan</span>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                        <StatCard label="User" value="12" icon="users" color="blue" />
-                        <StatCard label="Produk" value="854" icon="box" color="green" />
-                        <StatCard label="Income" value="84M" icon="trending-up" color="amber" />
-                        <StatCard label="Pending" value="5" icon="alert-circle" color="rose" />
+                        <StatCard label="User" value="12" color="blue" icon="users" />
+                        <StatCard label="Produk" value="854" color="green" icon="box" />
+                        <StatCard label="Income" value="84M" color="amber" icon="trending-up" />
+                        <StatCard label="Pending" value="5" color="rose" icon="alert-circle" />
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -201,17 +268,28 @@
             );
         };
 
-        const StatCard = ({ label, value, icon, color }) => (
-            <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between h-32 md:h-40">
-                <div className={`w-10 h-10 md:w-12 md:h-12 bg-${color}-50 text-${color}-600 rounded-2xl flex items-center justify-center`}>
-                    <i data-lucide={icon} className="w-5 h-5 md:w-6 h-6"></i>
+        const StatCard = ({ label, value, icon, color }) => {
+            const colorClasses = {
+                blue: { bg: 'color-blue-bg', text: 'color-blue-text' },
+                green: { bg: 'color-green-bg', text: 'color-green-text' },
+                amber: { bg: 'color-amber-bg', text: 'color-amber-text' },
+                rose: { bg: 'color-rose-bg', text: 'color-rose-text' }
+            };
+
+            const { bg, text } = colorClasses[color] || colorClasses.blue;
+
+            return (
+                <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between h-32 md:h-40">
+                    <div className={`w-10 h-10 md:w-12 md:h-12 ${bg} ${text} rounded-2xl flex items-center justify-center`}>
+                        <i data-lucide={icon} className="w-5 h-5 md:w-6 md:h-6"></i>
+                    </div>
+                    <div>
+                        <h4 className="text-xl md:text-2xl font-extrabold text-slate-800 leading-none">{value}</h4>
+                        <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">{label}</p>
+                    </div>
                 </div>
-                <div>
-                    <h4 className="text-xl md:text-2xl font-extrabold text-slate-800 leading-none">{value}</h4>
-                    <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">{label}</p>
-                </div>
-            </div>
-        );
+            );
+        };
 
         const NotificationItem = ({ title, desc, type }) => (
             <div className="flex gap-4 p-3 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer">
@@ -236,7 +314,7 @@
                 <div className="space-y-4 animate-fade-in">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold text-slate-800">Master Produk</h2>
-                        <button className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-200">
+                        <button className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
                             <i data-lucide="plus" className="w-5 h-5"></i>
                         </button>
                     </div>
