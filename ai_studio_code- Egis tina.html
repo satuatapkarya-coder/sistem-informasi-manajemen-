@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIM ERP - Mobile Responsive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+        .sidebar-gradient { background: #0F172A; }
+        .custom-shadow { box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .active-tab { background: #2563EB; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        
+        /* Mobile Specific Optimizations */
+        @media (max-width: 768px) {
+            .main-content { padding-bottom: 80px; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- COMPONENTS ---
+
+        const LoginPage = ({ onLogin }) => {
+            const [loading, setLoading] = useState(false);
+            const handleLogin = (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setTimeout(() => onLogin({ name: 'Alexander Pierce', role: 'Super Admin' }), 800);
+            };
+
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+                    <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100">
+                        <div className="flex justify-center mb-6">
+                            <div className="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                                <i data-lucide="shield-check" className="w-8 h-8"></i>
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-extrabold text-center text-slate-800">SIM ERP</h2>
+                        <p className="text-slate-500 text-center mb-8 text-sm font-medium">Enterprise Management System</p>
+                        
+                        <form onSubmit={handleLogin} className="space-y-4">
+                            <input type="email" placeholder="Email" className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" defaultValue="admin@erp.com" />
+                            <input type="password" placeholder="Password" className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" defaultValue="password" />
+                            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                                {loading ? "Logging in..." : "Sign In"} <i data-lucide="arrow-right" className="w-4 h-4"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        const BottomNav = ({ activeTab, setActiveTab }) => (
+            <div className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-slate-200 px-6 py-3 flex justify-between items-center z-[100]">
+                <NavItemMobile active={activeTab === 'dashboard'} icon="layout-dashboard" onClick={() => setActiveTab('dashboard')} />
+                <NavItemMobile active={activeTab === 'master'} icon="database" onClick={() => setActiveTab('master')} />
+                <div className="bg-blue-600 p-3 rounded-2xl text-white shadow-lg -mt-10 border-4 border-white" onClick={() => setActiveTab('transaksi')}>
+                    <i data-lucide="plus" className="w-6 h-6"></i>
+                </div>
+                <NavItemMobile active={activeTab === 'laporan'} icon="file-text" onClick={() => setActiveTab('laporan')} />
+                <NavItemMobile active={activeTab === 'settings'} icon="settings" onClick={() => setActiveTab('settings')} />
+            </div>
+        );
+
+        const NavItemMobile = ({ active, icon, onClick }) => (
+            <button onClick={onClick} className={`p-2 rounded-xl transition-all ${active ? 'text-blue-600 scale-110' : 'text-slate-400'}`}>
+                <i data-lucide={icon} className="w-6 h-6"></i>
+            </button>
+        );
+
+        const Sidebar = ({ activeTab, setActiveTab, isOpen, setIsOpen }) => {
+            const menus = [
+                { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
+                { id: 'master', label: 'Master Data', icon: 'database' },
+                { id: 'transaksi', label: 'Transaksi', icon: 'shopping-cart' },
+                { id: 'laporan', label: 'Laporan', icon: 'file-text' },
+                { id: 'settings', label: 'Pengaturan', icon: 'settings' },
+            ];
+
+            return (
+                <>
+                    {/* Overlay for mobile */}
+                    {isOpen && <div className="fixed inset-0 bg-black/50 z-[101] md:hidden" onClick={() => setIsOpen(false)}></div>}
+                    
+                    <div className={`fixed inset-y-0 left-0 w-72 sidebar-gradient text-white transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out z-[102] md:static md:z-0`}>
+                        <div className="p-8 flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <span className="font-extrabold text-xl">S</span>
+                            </div>
+                            <span className="text-xl font-bold tracking-tight">SIM <span className="text-blue-500">ERP</span></span>
+                        </div>
+                        <nav className="px-4 mt-4 space-y-2">
+                            {menus.map(menu => (
+                                <button 
+                                    key={menu.id}
+                                    onClick={() => { setActiveTab(menu.id); setIsOpen(false); }}
+                                    className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === menu.id ? 'active-tab' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                                >
+                                    <i data-lucide={menu.icon} className="w-5 h-5"></i>
+                                    <span className="font-semibold text-sm">{menu.label}</span>
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
+                </>
+            );
+        };
+
+        const Dashboard = () => {
+            useEffect(() => {
+                const ctx = document.getElementById('mainChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                        datasets: [{
+                            label: 'Transaksi',
+                            data: [30, 45, 35, 60, 50, 75],
+                            borderColor: '#2563EB',
+                            borderWidth: 4,
+                            pointRadius: 0,
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: (context) => {
+                                const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
+                                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+                                gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+                                return gradient;
+                            },
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { x: { grid: { display: false } }, y: { display: false } }
+                    }
+                });
+                lucide.createIcons();
+            }, []);
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    {/* Welcome Header */}
+                    <div className="md:flex justify-between items-center bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-800">Hi, Alex! 👋</h1>
+                            <p className="text-slate-500 text-sm">Berikut ringkasan bisnis Anda hari ini.</p>
+                        </div>
+                        <div className="mt-4 md:mt-0 flex gap-2 overflow-x-auto no-scrollbar">
+                            <span className="px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-bold whitespace-nowrap">Harian</span>
+                            <span className="px-4 py-2 text-slate-400 rounded-full text-xs font-bold whitespace-nowrap">Mingguan</span>
+                            <span className="px-4 py-2 text-slate-400 rounded-full text-xs font-bold whitespace-nowrap">Bulanan</span>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                        <StatCard label="User" value="12" icon="users" color="blue" />
+                        <StatCard label="Produk" value="854" icon="box" color="green" />
+                        <StatCard label="Income" value="84M" icon="trending-up" color="amber" />
+                        <StatCard label="Pending" value="5" icon="alert-circle" color="rose" />
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm h-[350px]">
+                            <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i data-lucide="bar-chart-2" className="w-5 h-5 text-blue-600"></i> Tren Penjualan
+                            </h3>
+                            <div className="h-full pb-10">
+                                <canvas id="mainChart"></canvas>
+                            </div>
+                        </div>
+                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                <i data-lucide="bell" className="w-5 h-5 text-blue-600"></i> Notifikasi
+                            </h3>
+                            <div className="space-y-4">
+                                <NotificationItem title="Stok Hampir Habis" desc="MacBook Pro M2 sisa 2 unit lagi." type="warning" />
+                                <NotificationItem title="User Baru" desc="Budi admin baru saja didaftarkan." type="info" />
+                                <NotificationItem title="Approval" desc="Manager menyetujui transaksi #TRX01." type="success" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const StatCard = ({ label, value, icon, color }) => (
+            <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between h-32 md:h-40">
+                <div className={`w-10 h-10 md:w-12 md:h-12 bg-${color}-50 text-${color}-600 rounded-2xl flex items-center justify-center`}>
+                    <i data-lucide={icon} className="w-5 h-5 md:w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 className="text-xl md:text-2xl font-extrabold text-slate-800 leading-none">{value}</h4>
+                    <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">{label}</p>
+                </div>
+            </div>
+        );
+
+        const NotificationItem = ({ title, desc, type }) => (
+            <div className="flex gap-4 p-3 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer">
+                <div className={`w-2 h-10 rounded-full ${type === 'warning' ? 'bg-amber-400' : type === 'success' ? 'bg-green-500' : 'bg-blue-500'}`}></div>
+                <div>
+                    <p className="text-sm font-bold text-slate-800 leading-none mb-1">{title}</p>
+                    <p className="text-xs text-slate-400 line-clamp-1">{desc}</p>
+                </div>
+            </div>
+        );
+
+        const MasterData = () => {
+            const data = [
+                { id: 1, name: 'MacBook Pro M2', sku: 'LAP-001', stock: 12, price: '25jt', status: 'In Stock' },
+                { id: 2, name: 'iPhone 15 Pro', sku: 'PHN-002', stock: 3, price: '21jt', status: 'Low Stock' },
+                { id: 3, name: 'iPad Air 5', sku: 'TAB-003', stock: 25, price: '12jt', status: 'In Stock' },
+            ];
+
+            useEffect(() => lucide.createIcons(), []);
+
+            return (
+                <div className="space-y-4 animate-fade-in">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold text-slate-800">Master Produk</h2>
+                        <button className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-200">
+                            <i data-lucide="plus" className="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    {/* Table Container - Mobile Scrollable or Card Stacked */}
+                    <div className="grid grid-cols-1 gap-4">
+                        {data.map(item => (
+                            <div key={item.id} className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
+                                        <i data-lucide="box"></i>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 text-sm">{item.name}</h4>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{item.sku} • {item.price}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className={`text-xs font-extrabold ${item.stock <= 5 ? 'text-rose-500' : 'text-green-500'}`}>
+                                        {item.stock} unit
+                                    </p>
+                                    <p className="text-[10px] text-slate-400 font-medium">Sisa Stok</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+            useEffect(() => { lucide.createIcons(); }, [user, activeTab]);
+
+            if (!user) return <LoginPage onLogin={setUser} />;
+
+            return (
+                <div className="flex min-h-screen">
+                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+                    
+                    <div className="flex-1 flex flex-col main-content">
+                        {/* Header */}
+                        <header className="h-20 glass border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-50">
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-all">
+                                    <i data-lucide="menu" className="w-6 h-6"></i>
+                                </button>
+                                <span className="font-extrabold text-slate-800 md:text-xl capitalize">{activeTab}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="hidden md:block text-right">
+                                    <p className="text-xs font-bold text-slate-800 leading-none">{user.name}</p>
+                                    <p className="text-[10px] text-blue-500 font-bold uppercase mt-1">{user.role}</p>
+                                </div>
+                                <img src={`https://ui-avatars.com/api/?name=${user.name}&background=2563EB&color=fff`} className="w-10 h-10 rounded-2xl border-2 border-white shadow-sm" alt="profile" />
+                            </div>
+                        </header>
+
+                        {/* Content Area */}
+                        <main className="p-4 md:p-8 flex-1 overflow-x-hidden">
+                            {activeTab === 'dashboard' && <Dashboard />}
+                            {activeTab === 'master' && <MasterData />}
+                            {['transaksi', 'laporan', 'settings'].includes(activeTab) && (
+                                <div className="flex flex-col items-center justify-center h-full text-slate-400 py-20">
+                                    <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                                        <i data-lucide="lock" className="w-8 h-8"></i>
+                                    </div>
+                                    <p className="font-bold text-slate-600">Modul Segera Hadir</p>
+                                    <p className="text-xs">Fitur ini tersedia pada versi Pro.</p>
+                                </div>
+                            )}
+                        </main>
+                    </div>
+
+                    <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
