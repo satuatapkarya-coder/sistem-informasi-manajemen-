@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIM ERP - Mobile Responsive</title>
+    <title>SIM ERP - Sistem Informasi Manajemen</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -71,6 +71,9 @@
         .color-rose-bg { background-color: #FFF1F2; }
         .color-rose-text { color: #E11D48; }
         
+        .color-purple-bg { background-color: #F3E8FF; }
+        .color-purple-text { color: #7C3AED; }
+        
         /* Mobile Specific Optimizations */
         @media (max-width: 768px) {
             .main-content { 
@@ -95,7 +98,7 @@
             const handleLogin = (e) => {
                 e.preventDefault();
                 setLoading(true);
-                setTimeout(() => onLogin({ name: 'Alexander Pierce', role: 'Super Admin' }), 800);
+                setTimeout(() => onLogin({ name: 'Titha Egis Tina', role: 'Super Admin' }), 800);
             };
 
             return (
@@ -153,8 +156,8 @@
                     {/* Overlay for mobile */}
                     {isOpen && <div className="fixed inset-0 bg-black/50 z-[101] md:hidden" onClick={() => setIsOpen(false)}></div>}
                     
-                    <div className={`fixed inset-y-0 left-0 w-72 sidebar-gradient text-white transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-50 md:relative md:z-0`}>
-                        <div className="p-8 flex items-center gap-3">
+                    <div className={`fixed inset-y-0 left-0 w-72 sidebar-gradient text-white transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-50 md:relative md:z-0 overflow-y-auto`}>
+                        <div className="p-8 flex items-center gap-3 sticky top-0 bg-opacity-100">
                             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                                 <span className="font-extrabold text-xl">S</span>
                             </div>
@@ -177,7 +180,7 @@
             );
         };
 
-        const Dashboard = () => {
+        const Dashboard = ({ userName }) => {
             useEffect(() => {
                 const chartElement = document.getElementById('mainChart');
                 if (chartElement) {
@@ -185,10 +188,10 @@
                     new Chart(ctx, {
                         type: 'line',
                         data: {
-                            labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                            labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Ming'],
                             datasets: [{
                                 label: 'Transaksi',
-                                data: [30, 45, 35, 60, 50, 75],
+                                data: [30, 45, 35, 60, 50, 75, 80],
                                 borderColor: '#2563EB',
                                 borderWidth: 4,
                                 pointRadius: 0,
@@ -222,12 +225,14 @@
                 lucide.createIcons();
             }, []);
 
+            const firstName = userName.split(' ')[0];
+
             return (
                 <div className="space-y-6 animate-fade-in">
                     {/* Welcome Header */}
                     <div className="flex flex-col md:flex-row justify-between md:items-center bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-800">Hi, Alex! 👋</h1>
+                            <h1 className="text-2xl font-bold text-slate-800">Hi, {firstName}! 👋</h1>
                             <p className="text-slate-500 text-sm">Berikut ringkasan bisnis Anda hari ini.</p>
                         </div>
                         <div className="mt-4 md:mt-0 flex gap-2 overflow-x-auto no-scrollbar">
@@ -302,11 +307,28 @@
         );
 
         const MasterData = () => {
-            const data = [
+            const [data, setData] = useState([
                 { id: 1, name: 'MacBook Pro M2', sku: 'LAP-001', stock: 12, price: '25jt', status: 'In Stock' },
                 { id: 2, name: 'iPhone 15 Pro', sku: 'PHN-002', stock: 3, price: '21jt', status: 'Low Stock' },
                 { id: 3, name: 'iPad Air 5', sku: 'TAB-003', stock: 25, price: '12jt', status: 'In Stock' },
-            ];
+            ]);
+
+            const [showForm, setShowForm] = useState(false);
+            const [newProduct, setNewProduct] = useState({ name: '', sku: '', stock: '', price: '' });
+
+            const handleAddProduct = (e) => {
+                e.preventDefault();
+                if (newProduct.name && newProduct.sku && newProduct.stock && newProduct.price) {
+                    setData([...data, {
+                        id: data.length + 1,
+                        ...newProduct,
+                        stock: parseInt(newProduct.stock),
+                        status: parseInt(newProduct.stock) <= 5 ? 'Low Stock' : 'In Stock'
+                    }]);
+                    setNewProduct({ name: '', sku: '', stock: '', price: '' });
+                    setShowForm(false);
+                }
+            };
 
             useEffect(() => lucide.createIcons(), []);
 
@@ -314,12 +336,28 @@
                 <div className="space-y-4 animate-fade-in">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold text-slate-800">Master Produk</h2>
-                        <button className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
+                        <button onClick={() => setShowForm(!showForm)} className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
                             <i data-lucide="plus" className="w-5 h-5"></i>
                         </button>
                     </div>
 
-                    {/* Table Container - Mobile Scrollable or Card Stacked */}
+                    {showForm && (
+                        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-4">Tambah Produk Baru</h3>
+                            <form onSubmit={handleAddProduct} className="space-y-4">
+                                <input type="text" placeholder="Nama Produk" required value={newProduct.name} onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-none" />
+                                <input type="text" placeholder="SKU" required value={newProduct.sku} onChange={(e) => setNewProduct({...newProduct, sku: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-none" />
+                                <input type="number" placeholder="Stok" required value={newProduct.stock} onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-none" />
+                                <input type="text" placeholder="Harga" required value={newProduct.price} onChange={(e) => setNewProduct({...newProduct, price: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-none" />
+                                <div className="flex gap-2">
+                                    <button type="submit" className="flex-1 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition-all">Simpan</button>
+                                    <button type="button" onClick={() => setShowForm(false)} className="flex-1 bg-slate-300 text-slate-800 py-2 rounded-xl hover:bg-slate-400 transition-all">Batal</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* Product List */}
                     <div className="grid grid-cols-1 gap-4">
                         {data.map(item => (
                             <div key={item.id} className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center">
@@ -340,6 +378,280 @@
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Transaksi = () => {
+            const [transactions, setTransactions] = useState([
+                { id: 'TRX-001', date: '2024-01-15', product: 'MacBook Pro M2', qty: 2, total: '50jt', status: 'Selesai' },
+                { id: 'TRX-002', date: '2024-01-14', product: 'iPhone 15 Pro', qty: 5, total: '105jt', status: 'Menunggu' },
+                { id: 'TRX-003', date: '2024-01-13', product: 'iPad Air 5', qty: 3, total: '36jt', status: 'Selesai' },
+            ]);
+
+            const [showForm, setShowForm] = useState(false);
+            const [newTx, setNewTx] = useState({ product: '', qty: '', total: '' });
+
+            const handleAddTransaction = (e) => {
+                e.preventDefault();
+                if (newTx.product && newTx.qty && newTx.total) {
+                    setTransactions([...transactions, {
+                        id: `TRX-${String(transactions.length + 1).padStart(3, '0')}`,
+                        date: new Date().toISOString().split('T')[0],
+                        ...newTx,
+                        status: 'Menunggu'
+                    }]);
+                    setNewTx({ product: '', qty: '', total: '' });
+                    setShowForm(false);
+                }
+            };
+
+            useEffect(() => lucide.createIcons(), []);
+
+            return (
+                <div className="space-y-4 animate-fade-in">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold text-slate-800">Transaksi Penjualan</h2>
+                        <button onClick={() => setShowForm(!showForm)} className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
+                            <i data-lucide="plus" className="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    {showForm && (
+                        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <h3 className="font-bold text-slate-800 mb-4">Tambah Transaksi Baru</h3>
+                            <form onSubmit={handleAddTransaction} className="space-y-4">
+                                <input type="text" placeholder="Nama Produk" required value={newTx.product} onChange={(e) => setNewTx({...newTx, product: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-none" />
+                                <input type="number" placeholder="Jumlah" required value={newTx.qty} onChange={(e) => setNewTx({...newTx, qty: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-none" />
+                                <input type="text" placeholder="Total" required value={newTx.total} onChange={(e) => setNewTx({...newTx, total: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-none" />
+                                <div className="flex gap-2">
+                                    <button type="submit" className="flex-1 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition-all">Simpan</button>
+                                    <button type="button" onClick={() => setShowForm(false)} className="flex-1 bg-slate-300 text-slate-800 py-2 rounded-xl hover:bg-slate-400 transition-all">Batal</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* Transaction List */}
+                    <div className="grid grid-cols-1 gap-4">
+                        {transactions.map(tx => (
+                            <div key={tx.id} className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-bold text-slate-800">{tx.id}</p>
+                                        <p className="text-xs text-slate-400">{tx.date}</p>
+                                    </div>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${tx.status === 'Selesai' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                        {tx.status}
+                                    </span>
+                                </div>
+                                <div className="mt-3 border-t pt-3">
+                                    <p className="text-sm font-semibold text-slate-800">{tx.product} x {tx.qty}</p>
+                                    <p className="text-sm text-blue-600 font-bold">Total: {tx.total}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Laporan = () => {
+            useEffect(() => {
+                const chartElement = document.getElementById('reportChart');
+                if (chartElement) {
+                    const ctx = chartElement.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                            datasets: [
+                                {
+                                    label: 'Penjualan',
+                                    data: [120, 190, 150, 220, 180, 250],
+                                    backgroundColor: '#2563EB',
+                                },
+                                {
+                                    label: 'Biaya',
+                                    data: [80, 120, 100, 140, 110, 160],
+                                    backgroundColor: '#EF4444',
+                                }
+                            ]
+                        },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: true } },
+                        }
+                    });
+                }
+                lucide.createIcons();
+            }, []);
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    <h2 className="text-xl font-bold text-slate-800">Laporan Keuangan</h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-slate-500 text-sm">Total Penjualan</p>
+                                    <p className="text-2xl font-bold text-slate-800">Rp 1.2M</p>
+                                </div>
+                                <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                                    <i data-lucide="trending-up" className="w-6 h-6 text-blue-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-slate-500 text-sm">Total Biaya</p>
+                                    <p className="text-2xl font-bold text-slate-800">Rp 650K</p>
+                                </div>
+                                <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                                    <i data-lucide="trending-down" className="w-6 h-6 text-red-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-slate-500 text-sm">Keuntungan</p>
+                                    <p className="text-2xl font-bold text-green-600">Rp 550K</p>
+                                </div>
+                                <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
+                                    <i data-lucide="award" className="w-6 h-6 text-green-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm h-[400px]">
+                        <h3 className="font-bold text-slate-800 mb-4">Grafik Penjualan vs Biaya</h3>
+                        <canvas id="reportChart"></canvas>
+                    </div>
+                </div>
+            );
+        };
+
+        const Settings = () => {
+            const [settings, setSettings] = useState({
+                companyName: 'PT Titha Egis Tina',
+                email: 'titha@simerpindonesia.com',
+                phone: '+62 812-3456-7890',
+                address: 'Jl. Merdeka No. 123, Jakarta',
+                currency: 'IDR'
+            });
+
+            const [editMode, setEditMode] = useState(false);
+
+            useEffect(() => lucide.createIcons(), []);
+
+            const handleSave = () => {
+                setEditMode(false);
+                alert('Pengaturan berhasil disimpan!');
+            };
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    <h2 className="text-xl font-bold text-slate-800">Pengaturan Sistem</h2>
+
+                    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="font-bold text-slate-800">Informasi Perusahaan</h3>
+                            <button onClick={() => setEditMode(!editMode)} className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all">
+                                {editMode ? 'Batal' : 'Edit'}
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm font-semibold text-slate-700">Nama Perusahaan</label>
+                                <input 
+                                    type="text" 
+                                    disabled={!editMode}
+                                    value={settings.companyName}
+                                    onChange={(e) => setSettings({...settings, companyName: e.target.value})}
+                                    className="w-full mt-1 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 outline-none disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-semibold text-slate-700">Email</label>
+                                <input 
+                                    type="email" 
+                                    disabled={!editMode}
+                                    value={settings.email}
+                                    onChange={(e) => setSettings({...settings, email: e.target.value})}
+                                    className="w-full mt-1 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 outline-none disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-semibold text-slate-700">Telepon</label>
+                                <input 
+                                    type="text" 
+                                    disabled={!editMode}
+                                    value={settings.phone}
+                                    onChange={(e) => setSettings({...settings, phone: e.target.value})}
+                                    className="w-full mt-1 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 outline-none disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-semibold text-slate-700">Alamat</label>
+                                <textarea 
+                                    disabled={!editMode}
+                                    value={settings.address}
+                                    onChange={(e) => setSettings({...settings, address: e.target.value})}
+                                    className="w-full mt-1 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 outline-none disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                    rows="3"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-semibold text-slate-700">Mata Uang</label>
+                                <select 
+                                    disabled={!editMode}
+                                    value={settings.currency}
+                                    onChange={(e) => setSettings({...settings, currency: e.target.value})}
+                                    className="w-full mt-1 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 outline-none disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                >
+                                    <option>IDR</option>
+                                    <option>USD</option>
+                                    <option>EUR</option>
+                                </select>
+                            </div>
+
+                            {editMode && (
+                                <button onClick={handleSave} className="w-full bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 transition-all font-semibold">
+                                    Simpan Perubahan
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-4">Preferensi Sistem</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-semibold text-slate-700">Mode Gelap</label>
+                                <input type="checkbox" className="w-5 h-5 rounded cursor-pointer" />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-semibold text-slate-700">Notifikasi Email</label>
+                                <input type="checkbox" className="w-5 h-5 rounded cursor-pointer" defaultChecked />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-semibold text-slate-700">Laporan Otomatis</label>
+                                <input type="checkbox" className="w-5 h-5 rounded cursor-pointer" defaultChecked />
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
@@ -378,17 +690,11 @@
 
                         {/* Content Area */}
                         <main className="p-4 md:p-8 flex-1 overflow-x-hidden">
-                            {activeTab === 'dashboard' && <Dashboard />}
+                            {activeTab === 'dashboard' && <Dashboard userName={user.name} />}
                             {activeTab === 'master' && <MasterData />}
-                            {['transaksi', 'laporan', 'settings'].includes(activeTab) && (
-                                <div className="flex flex-col items-center justify-center h-full text-slate-400 py-20">
-                                    <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                                        <i data-lucide="lock" className="w-8 h-8"></i>
-                                    </div>
-                                    <p className="font-bold text-slate-600">Modul Segera Hadir</p>
-                                    <p className="text-xs">Fitur ini tersedia pada versi Pro.</p>
-                                </div>
-                            )}
+                            {activeTab === 'transaksi' && <Transaksi />}
+                            {activeTab === 'laporan' && <Laporan />}
+                            {activeTab === 'settings' && <Settings />}
                         </main>
                     </div>
 
